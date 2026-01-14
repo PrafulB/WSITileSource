@@ -17,13 +17,14 @@ export async function createTileSource(imageSource, numWorkers = undefined, opti
         numWorkers = navigator.hardwareConcurrency || 4;
     }
     // Check if we should use GeoTIFFTileSource (memory efficient for SVS/TIFF)
-    if (isGeoTIFF(imageSource) && OpenSeadragon.GeoTIFFTileSource) {
+    if (isGeoTIFF(imageSource)) {
         const { default: OpenSeadragon } = await import("https://esm.sh/openseadragon");
         const { default: attachTileSource } = await import(import.meta.resolve(`./GeoTIFFTileSource.js`));
         attachTileSource(OpenSeadragon)
-
-        console.log("Using GeoTIFFTileSource for suspected SVS/TIFF file");
-        return OpenSeadragon.GeoTIFFTileSource.getAllTileSources(imageSource, { cache: false, logLatency: true, slideOnly: true });
+        if (OpenSeadragon.GeoTIFFTileSource) {
+            console.log("Using GeoTIFFTileSource for suspected SVS/TIFF file");
+            return OpenSeadragon.GeoTIFFTileSource.getAllTileSources(imageSource, { cache: false, logLatency: true, slideOnly: true });
+        }
     }
 
     // Fallback to OpenSlideTileSource otherwise
