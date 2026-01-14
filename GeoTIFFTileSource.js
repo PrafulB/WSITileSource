@@ -61,7 +61,6 @@ export default function attachTileSource($) {
             if (supportedDecoders[imageCompression] && this._pool?.supportedCompression !== imageCompression) {
                 const createWorker = () => new Worker(URL.createObjectURL(new Blob([`
                     importScripts("${baseURL}/decoders/${supportedDecoders[imageCompression]}")
-                    // importScripts("http://localhost:8081/decoders/${supportedDecoders[imageCompression]}")
                 `])), {
                     name: `GeoTIFFTileSource_worker_${Math.floor(Math.random() * 100000)}`
                 })
