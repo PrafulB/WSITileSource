@@ -1,0 +1,133 @@
+export declare type OpenSlideT = number;
+export interface FileEntry {
+    path: string;
+    file: File;
+}
+export declare type WorkerCommandBase = {
+    type: "init";
+} | {
+    type: "open";
+    payload: {
+        file: File | File[] | FileEntry[] | string;
+    };
+} | {
+    type: "close";
+    payload: {
+        osr: OpenSlideT;
+    };
+} | {
+    type: "getPropertyNames";
+    payload: {
+        osr: OpenSlideT;
+    };
+} | {
+    type: "getPropertyValue";
+    payload: {
+        osr: OpenSlideT;
+        name: string;
+    };
+} | {
+    type: "getLevelCount";
+    payload: {
+        osr: OpenSlideT;
+    };
+} | {
+    type: "getLevelDimensions";
+    payload: {
+        osr: OpenSlideT;
+        level: number;
+    };
+} | {
+    type: "getLevelDownsample";
+    payload: {
+        osr: OpenSlideT;
+        level: number;
+    };
+} | {
+    type: "getBestLevelForDownsample";
+    payload: {
+        osr: OpenSlideT;
+        downsample: number;
+    };
+} | {
+    type: "readRegion";
+    payload: {
+        osr: OpenSlideT;
+        x: number;
+        y: number;
+        level: number;
+        width: number;
+        height: number;
+    };
+} | {
+    type: "readIccProfile";
+    payload: {
+        osr: OpenSlideT;
+    };
+} | {
+    type: "abort";
+};
+export declare type WorkerCommand = WorkerCommandBase & {
+    id: string;
+};
+export declare type WorkerResponseBase = {
+    type: "error";
+    payload: {
+        message: string;
+    };
+} | {
+    type: "ready";
+} | {
+    type: "open";
+    payload: {
+        osr: OpenSlideT;
+    };
+} | {
+    type: "close";
+    payload: {
+        osr: OpenSlideT;
+    };
+} | {
+    type: "getPropertyNames";
+    payload: {
+        names: string[];
+    };
+} | {
+    type: "getPropertyValue";
+    payload: {
+        value: string | null;
+    };
+} | {
+    type: "getLevelCount";
+    payload: {
+        count: number;
+    };
+} | {
+    type: "getLevelDimensions";
+    payload: {
+        dimensions: [number, number];
+    };
+} | {
+    type: "getLevelDownsample";
+    payload: {
+        downsample: number;
+    };
+} | {
+    type: "getBestLevelForDownsample";
+    payload: {
+        level: number;
+    };
+} | {
+    type: "readRegion";
+    payload: {
+        data: Uint8ClampedArray;
+    };
+} | {
+    type: "readIccProfile";
+    payload: {
+        iccProfile: Uint8Array | null;
+    };
+};
+export declare type WorkerResponse = WorkerResponseBase & {
+    id: string;
+};
