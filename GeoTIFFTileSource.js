@@ -37,7 +37,7 @@ export default function attachTileSource($) {
      * @property {Array}  levels
      */
 
-    $.GeoTIFFTileSource = function (input, opts = { 'logLatency': false, 'cache': true, 'pool': undefined }) {
+    $.GeoTIFFTileSource = function (input, opts = { 'logLatency': false, 'cache': true, 'pool': undefined, 'numWorkers': Math.floor(navigator.hardwareConcurrency / 2) }) {
         let self = this;
         this.options = opts;
 
@@ -64,7 +64,7 @@ export default function attachTileSource($) {
                 `])), {
                     name: `GeoTIFFTileSource_worker_${Math.floor(Math.random() * 100000)}`
                 })
-                this._pool = new Pool(Math.floor(navigator.hardwareConcurrency / 2), createWorker)
+                this._pool = new Pool(opts.numWorkers, createWorker)
             } else {
                 this._pool = new Pool();
             }
