@@ -18,7 +18,7 @@ export async function createTileSource(imageSource, numWorkers = undefined, opti
     }
     // Check if we should use GeoTIFFTileSource (memory/network efficient for SVS/TIFF)
     if (isGeoTIFF(imageSource)) {
-        const { default: OpenSeadragon } = await import("https://esm.sh/openseadragon");
+        const { default: OpenSeadragon } = await import("https://cdn.jsdelivr.net/npm/openseadragon@latest/+esm");
         const { default: attachTileSource } = await import(import.meta.resolve(`./GeoTIFFTileSource.js`));
         attachTileSource(OpenSeadragon)
         if (OpenSeadragon.GeoTIFFTileSource) {

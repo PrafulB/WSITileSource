@@ -127,7 +127,7 @@ export default function attachTileSource($) {
     //Static functions
 
     //To do: add documentation about what this does (i.e. separates likely subimages into separate GeoTIFFTileSource objects)
-    $.GeoTIFFTileSource.getAllTileSources = async function (input, opts = { 'cache': true, 'slideOnly': false, 'pool': undefined }) {
+    $.GeoTIFFTileSource.getAllTileSources = async function (input, opts = { 'cache': true, 'slideOnly': false, 'pool': undefined, numWorkers: Math.floor(navigator.hardwareConcurrency / 2) }) {
         let cacheControlHeaders = undefined
         if (opts.cache === false) {
             cacheControlHeaders = {
