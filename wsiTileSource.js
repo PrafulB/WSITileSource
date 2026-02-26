@@ -1,29 +1,41 @@
-function isGeoTIFF(source) {
-    let filename = '';
-    if (source instanceof File) {
-        filename = source.name;
-    } else if (source instanceof URL) {
-        filename = source.pathname;
-    } else if (typeof source === 'string') {
-        filename = source;
+async function isGeoTIFF(imageSource) {
+    let isTiffOrSVS = false
+    let srcName = ""
+    if (imageSource instanceof File) {
+      srcName = imageSource.name
+      isTiffOrSVS = srcName.match(/\.(tif|tiff|svs|gtiff)$/i);
     }
-
-    return /\.(svs|tif|tiff)$/i.test(filename);
-}
+    else {
+      isTiffOrSVS = imageSource.match(/\.(tif|tiff|svs|gtiff)$/i);
+      if (!isTiffOrSVS) {
+        // Check Content-Disposition
+        // Should make a HEAD request, but GDC returns a 400, so making an aborted GET for now.
+        const ac = new AbortController()
+        const req = await fetch(imageSource, {
+          signal: ac.signal
+        })
+        ac.abort()
+        const filename = req.headers?.get("Content-Disposition")?.split("filename=")[1]
+        isTiffOrSVS = filename?.match(/\.(tif|tiff|svs|gtiff)$/i);
+      }
+    }
+    console.log(isTiffOrSVS)
+    return isTiffOrSVS
+  }
 
 export async function createTileSource(imageSource, numWorkers = undefined, options = {}) {
 
     if (numWorkers === undefined) {
-        numWorkers = navigator.hardwareConcurrency || 4;
+        numWorkers = navigator.hardwareConcurrency || 1;
     }
     // Check if we should use GeoTIFFTileSource (memory/network efficient for SVS/TIFF)
-    if (isGeoTIFF(imageSource)) {
-        const { default: OpenSeadragon } = await import("https://cdn.jsdelivr.net/npm/openseadragon@latest/+esm");
+    if (await isGeoTIFF(imageSource)) {
+        const { default: OpenSeadragon } = await import("https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/+esm");
         const { default: attachTileSource } = await import(import.meta.resolve(`./GeoTIFFTileSource.js`));
         attachTileSource(OpenSeadragon)
         if (OpenSeadragon.GeoTIFFTileSource) {
             console.log("Using GeoTIFFTileSource for suspected SVS/TIFF file");
-            return OpenSeadragon.GeoTIFFTileSource.getAllTileSources(imageSource, { cache: false, logLatency: true, slideOnly: true, numWorkers });
+            return OpenSeadragon.GeoTIFFTileSource.getAllTileSources(imageSource, { cache: true, logLatency: true, slideOnly: true, numWorkers });
         }
     }
 
